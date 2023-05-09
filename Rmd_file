@@ -1,0 +1,66 @@
+---
+title: "Rmarkdown exercise"
+author: "Pol"
+date: "2023-05-08"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Available books links
+[Intro2R](intro2r.com)
+
+[Rmarkdown, the definitive guide](https://bookdown.org/yihui/rmarkdown/)
+
+
+## Rmarkdown exercise
+
+#### Packages for Rmarkdown
+
+```{r, eval=FALSE}
+install.packages("rmarkdown")
+install.packages("tinytex")
+tinytex::install_tinytex() # Tinytex is requred for PDF format
+library(rmarkdown)
+```
+#### Create, list and extract directories and files
+
+```{r, eval=FALSE}
+dir.create("output") # Create directory
+dir.create("./output/figures") 
+unzip("all_data.zip") # Unzip ZIP file
+list.files() # List files on current directory
+list.dirs() # List directories on current directory
+```
+
+#### Import data and visualize data structure
+
+I am familiar with these sort of commands and I use them often on my current PhD project. For this reason I do not go into detail.
+
+```{r}
+flowers <- read.table(file = "data/raw_data/flower.txt", sep = "\t", header = T, stringsAsFactors = T)
+```
+
+
+``summary()`` returns some measures of central tendency of the variables of the data set, whereas ``str()`` only returns the column names and their data type.
+
+
+```{r}
+str(flowers)
+```
+```{r}
+summary(flowers)
+```
+
+#### Rmarkdown language
+
+* ``< Ctr + Alt + I >`` opens a chunk of code
+* ``echo = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be shown.
+* ``eval = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be run at knitting.
+* Introducing images: ``![image](path){width=???px, height=???px}``
+
