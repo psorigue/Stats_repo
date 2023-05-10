@@ -1,0 +1,93 @@
+---
+title: "Rmarkdown exercise"
+author: "Pol"
+date: "2023-05-08"
+output:
+  #pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Available books links
+[Intro2R](intro2r.com)
+
+[Rmarkdown, the definitive guide](https://bookdown.org/yihui/rmarkdown/)
+
+
+# Rmarkdown exercise
+
+#### Packages for Rmarkdown
+
+```{r, eval=FALSE}
+install.packages("rmarkdown")
+install.packages("tinytex")
+tinytex::install_tinytex() # Tinytex is requred for PDF format
+library(rmarkdown)
+```
+#### Create, list and extract directories and files
+
+```{r, eval=FALSE}
+dir.create("output") # Create directory
+dir.create("./output/figures") 
+unzip("all_data.zip") # Unzip ZIP file
+list.files() # List files on current directory
+list.dirs() # List directories on current directory
+```
+
+#### Import data and visualize data structure
+
+I am familiar with these sort of commands and I use them often on my current PhD project. For this reason I do not go into detail.
+
+```{r}
+pathways <- read.table(file = "Data/dataset_overview_pathways.txt", sep = "\t", header = T, stringsAsFactors = T)
+```
+
+
+``summary()`` returns some measures of central tendency of the variables of the data set, whereas ``str()`` only returns the column names and their data type.
+
+
+```{r}
+str(pathways)
+```
+```{r}
+summary(pathways)
+```
+
+#### Rmarkdown language
+
+* ``< Ctr + Alt + I >`` opens a chunk of code
+* ``echo = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be shown.
+* ``eval = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be run at knitting.
+* Introducing images: ``![title](path){width=???px, height=???px}``
+
+# Create Version Control
+To create a Version Control on Git, a GitHub account is required.
+
+##### Download
+Git needs to be installed in the computer. To check if it is installed, the following can be typed in the R terminal: ``git --version``. [Here](https://git-scm.com/downloads) is the link for downloading it.
+
+##### Configure
+###### Git in the PC
+In the terminal of the computer, this needs to be typed:
+```
+git config --global user.email 'you@youremail.com'
+git config --global user.name 'Your Name'
+git config --global --list # Confirm configuration
+```
+###### Git in RStudio
+For RStudio to access Git: ``Tools > Global Options > Git/SVN > Git executable > <path_to_git>``
+
+![Git in RStudio](Figures/Git_in_RStudio.png){width=400px, height=400px}
+
+###### Setting up a project in RStudio
+1. Create a new repository in GitHub with a README file
+2. Create a new project with Version Control in RStudio
+  * Include the URL of the GitHub repository
+  
+##### Using Git
+
+
