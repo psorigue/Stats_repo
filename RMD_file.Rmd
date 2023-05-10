@@ -89,5 +89,17 @@ For RStudio to access Git: ``Tools > Global Options > Git/SVN > Git executable >
   * Include the URL of the GitHub repository
   
 ##### Using Git
+Four steps on saving the changes:
+
+**Save** in local computer (normally)
+
+**Stage** the file in Git (brak point in the progress)
+
+**Commit** creates a permanent snapshot of changes
+
+**Push** to upload on GitHub
+
+**Pull** to import from GitHub to local computer
+
 
 
