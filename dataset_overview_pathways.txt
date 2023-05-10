@@ -1,0 +1,16 @@
+	OXTP	DOPP	SERP	STEP	VT-R
+total_genes	204	167	143	31	7
+unique_pathway	138	75	71	31	7
+sourced_homolog	66	71	71	19	0
+discarded_(full STOP)	4	2	2	0	0
+discarded_(coverage)	6	1	16	0	0
+total_genes_analyzed	194	164	123	31	7
+common_other_pways	66	92	92	0	0
+mean_nucl_diversity	0.006673067	0.006052111	0.007314054	0.010863421	0.008977546
+FEL_pos_genes	119	85	68	26	7
+M7_pos_genes	109	81	64	26	7
+no_codeml_genes	7	4	8	0	0
+mean omega_FEL	0.123990146	0.114436626	0.148068046	0.320330832	0.232515455
+total_sites_FEL	579	293	256	155	20
+total_sites_FEL-M7	412	205	208	107	16
+sites_high_evidence (FEL-MEME-M1-M7)	165	66	49	55	5
