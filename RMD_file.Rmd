@@ -43,7 +43,7 @@ list.dirs() # List directories on current directory
 I am familiar with these sort of commands and I use them often on my current PhD project. For this reason I do not go into detail.
 
 ```{r}
-pathways <- read.table(file = "Data/dataset_overview_pathways.txt", sep = "\t", header = T, stringsAsFactors = T)
+pathways <- read.table(file = "datasets/dataset_overview_pathways.txt", sep = "\t", header = T, stringsAsFactors = T)
 ```
 
 
@@ -105,11 +105,11 @@ Four steps on saving the changes:
 
 # Exploring data
 
-###### Violin plot: Nucleotide Diversity of all genes
+#### **Violin plot: Nucleotide Diversity of all genes**
 
 ```{r}
-library("ggplot2")
-library("dplyr")
+library("ggplot2", verbose = F)
+library("dplyr", verbose = F)
 # Load data
 pathgen <- read.csv("datasets/dataset_overview_genes.txt", sep = "\t", header = T)
 # Select column to plot
@@ -136,14 +136,14 @@ plot_pi
 by(pg_na$nucl_div, pg_na$pathway, summary)
 ```
 
-###### Lollipop chart: Top 10 genes of the Oxytocin Signalling Pathway
+#### **Lollipop chart: Top 10 genes of the Oxytocin Signalling Pathway**
 
 ```{r}
-library("ggplot2")
-library("dplyr")
+library("ggplot2", verbose = F)
+library("dplyr", verbose = F)
 df_top10 <- read.csv("datasets/oxtp_FEL_dNdS.txt", header = T, sep = "\t")
 #Rename columns and select the ones required
-colnames(df_top10) <- c("gene", "w", "3", "4", "5", "6", "site_density")
+colnames(df_top10) <- c("gene", "w", "pos_sites", "total_sites", "site_density")
 df_top10_f <-df_top10[1:10,]
 df_top10_f <- select(df_top10_f, c(gene, w, site_density))
 df_top10_f$site_density <- round(df_top10_f$site_density, round(2)) # Round to 2 decimals
@@ -177,27 +177,33 @@ dNdS_top10
 summary(df_top10_f)
 ```
 
-###### Scatterplot for discrete variables: Pair-bonding vs SNP (ref/alternative)
+#### **Scatterplot for discrete variables: Pair-bonding vs SNP (ref/alternative)**
 
 ```{r}
-library("ggplot2")
-library("dplyr")
+library("ggplot2", verbose = F)
+library("dplyr", verbose = F)
 
 df <- read.csv("datasets/EGFR_19907494_PB_BT.txt", sep = "\t")
 df2 <- read.csv("datasets/spp-tribe.txt", sep = "\t")
 
 colnames(df) <- c("spp", "PB", "SNP")
-colnames(df2)
 
+# Merge the 2 data frames to link species and tribes
 df_final <- inner_join(df, df2, by="spp")
 
+#Plot
 SNP_vs_PB <- ggplot(df_final, aes(x = PB, y = SNP, color = tribe)) +
   geom_point(position=position_jitter(width=0.2, height = 0.2)) +
   scale_x_continuous(breaks = c(0, 1), limits = c(-0.2, 1.2)) +
-  scale_y_continuous(breaks = c(0, 1), limits = c(-0.2, 1.2))
+  scale_y_continuous(breaks = c(0, 1), limits = c(-0.2, 1.2)) +
+  labs(title = "SNP allele vs phenotype (Pair-bonding)",
+       x = "Pair-bonding (0 = No ; 1 = Yes)",
+       y = "SNP (0 = Ref ; 1 = Alt)")
 
 SNP_vs_PB
 ```
 
+# Inferential Statistics
 
+shapiro.test(resid(<model>)) will tell if residuals follow normal distribution. If p > 0.05, residuals follow normal distribution
 
