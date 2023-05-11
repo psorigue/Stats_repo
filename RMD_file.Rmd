@@ -103,7 +103,7 @@ Four steps on saving the changes:
 
 
 
-# Exploring data
+# Exploring data and summary statistics
 
 #### **Violin plot: Nucleotide Diversity of all genes**
 
@@ -163,7 +163,7 @@ dNdS_top10 <- ggplot(df_top10_f, aes(x = gene, y = dNdS)) +
        x = "Gene",
        y = "dN/dS",
        size = "Positive sites\ndensity\n(% of sites)") +
-  ylim(0.2, 0.7) +
+  ylim(0.3, 0.7) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
         axis.title = element_text(size = 12),
@@ -204,6 +204,41 @@ SNP_vs_PB
 ```
 
 # Inferential Statistics
+
+#### Corelation between nucleotide diversity (π) and dNdS ratio (ω)
+We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is corelated with the index of positive selection (ω). By taking the Oxytocin Signalling Pathway, we compute a Spearman's corelation test, which does NOT assume linearity but only monotony (always same sense -positive or negative-)
+
+```{r, message=FALSE, warning=FALSE}
+library("ggplot2", verbose = F)
+library("dplyr", verbose = F)
+# Load data
+dataset <- read.csv("datasets/dataset_overview_genes.txt", sep = "\t", header = T)
+df_oxtp <- dataset[dataset$pathway == "OXTP",]
+ggplot(df_oxtp, aes(x=nucl_div, y=dNdS_FEL)) +
+  geom_point()
+# Corelation
+oxtp_cor <- cor.test(df_oxtp$nucl_div, df_oxtp$dNdS_FEL, method = 'spearman')
+print(oxtp_cor)
+
+# Corelation test for the other pathways (all individually)
+df_dopp <- dataset[dataset$pathway == "DOPP",]
+df_serp <- dataset[dataset$pathway == "SERP",]
+df_step <- dataset[dataset$pathway == "STEP",]
+df_vtr <- dataset[dataset$pathway == "VT-R",]
+
+dopp_cor <- cor.test(df_dopp$nucl_div, df_dopp$dNdS_FEL, method = 'spearman')
+serp_cor <- cor.test(df_serp$nucl_div, df_serp$dNdS_FEL, method = 'spearman')
+step_cor <- cor.test(df_step$nucl_div, df_step$dNdS_FEL, method = 'spearman')
+vtr_cor <- cor.test(df_vtr$nucl_div, df_vtr$dNdS_FEL, method = 'spearman')
+
+print(dopp_cor)
+print(serp_cor)
+print(step_cor)
+print(vtr_cor)
+```
+All tests provide statistical significance for corelation between (π) and (ω) except for the VT-R. The latter has only 7 points and the inferred rho is negative, as opposed to the rest. This can be due to the low number of observations.
+
+
 
 shapiro.test(resid(<model>)) will tell if residuals follow normal distribution. If p > 0.05, residuals follow normal distribution
 
