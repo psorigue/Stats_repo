@@ -3,7 +3,7 @@ title: "Rmarkdown exercise"
 author: "Pol"
 date: "2023-05-08"
 output:
-  #pdf_document: default
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -206,14 +206,16 @@ SNP_vs_PB
 # Inferential Statistics
 
 #### Corelation between nucleotide diversity (π) and dNdS ratio (ω)
-We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is corelated with the index of positive selection (ω). By taking the Oxytocin Signalling Pathway, we compute a Spearman's corelation test, which does NOT assume linearity but only monotony (always same sense -positive or negative-)
+We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is corelated with the index of positive selection (ω). By taking the Oxytocin Signalling Pathway, we compute a Spearman's corelation test, which does NOT assume linearity but only monotony (always same sense -positive or negative-).
 
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
 # Load data
 dataset <- read.csv("datasets/dataset_overview_genes.txt", sep = "\t", header = T)
+# Select pathway
 df_oxtp <- dataset[dataset$pathway == "OXTP",]
+# Plot
 ggplot(df_oxtp, aes(x=nucl_div, y=dNdS_FEL)) +
   geom_point()
 # Corelation
