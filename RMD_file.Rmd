@@ -107,7 +107,7 @@ Four steps on saving the changes:
 
 #### **Violin plot: Nucleotide Diversity of all genes**
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
 # Load data
@@ -138,24 +138,24 @@ by(pg_na$nucl_div, pg_na$pathway, summary)
 
 #### **Lollipop chart: Top 10 genes of the Oxytocin Signalling Pathway**
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
 df_top10 <- read.csv("datasets/oxtp_FEL_dNdS.txt", header = T, sep = "\t")
 #Rename columns and select the ones required
-colnames(df_top10) <- c("gene", "w", "pos_sites", "total_sites", "site_density")
+colnames(df_top10) <- c("gene", "dNdS", "pos_sites", "total_sites", "site_density")
 df_top10_f <-df_top10[1:10,]
-df_top10_f <- select(df_top10_f, c(gene, w, site_density))
+df_top10_f <- select(df_top10_f, c(gene, dNdS, site_density))
 df_top10_f$site_density <- round(df_top10_f$site_density, round(2)) # Round to 2 decimals
 
 #Order by w value
-df_s <- df_top10_f[order(df_top10_f$w, decreasing = T), ]
+df_s <- df_top10_f[order(df_top10_f$dNdS, decreasing = T), ]
 gene_order = c(df_s$gene)
 df_top10_f$gene <- factor(df_top10_f$gene, levels = rev(gene_order))
 
 #Plot
-dNdS_top10 <- ggplot(df_top10_f, aes(x = gene, y = w)) +
-  geom_segment(aes(x = gene, xend = gene, y = 0.2, yend = w), linetype=2, color = "black", linewidth = 0.6) +
+dNdS_top10 <- ggplot(df_top10_f, aes(x = gene, y = dNdS)) +
+  geom_segment(aes(x = gene, xend = gene, y = 0.2, yend = dNdS), linetype=2, color = "black", linewidth = 0.6) +
   geom_point(aes(size = site_density), fill = "gray", color = "black", shape = 21, alpha = 1, stroke = 1) +
   geom_text(aes(label = paste(site_density, " %", sep = "")), size = 3, color = "black", hjust = -0.5) +
   scale_size(range = c(1, 10)) +
@@ -179,7 +179,7 @@ summary(df_top10_f)
 
 #### **Scatterplot for discrete variables: Pair-bonding vs SNP (ref/alternative)**
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
 
