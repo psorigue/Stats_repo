@@ -103,3 +103,101 @@ Four steps on saving the changes:
 
 
 
+# Exploring data
+
+###### Violin plot: Nucleotide Diversity of all genes
+
+```{r}
+library("ggplot2")
+library("dplyr")
+# Load data
+pathgen <- read.csv("datasets/dataset_overview_genes.txt", sep = "\t", header = T)
+# Select column to plot
+colnames(pathgen)
+column_pl <- "nucl_div"
+# Group by pathway
+pg_by_pway <- group_by(pathgen, pathway)
+# Remove NAs for the column of interest
+pg_na <- pg_by_pway[!(is.na(paste("dfg$", column_pl, sep = ""))), ]
+# Violin plot variable
+colors_pways <- c("STEP" = "#F8766D", "DOPP" = "#7CAE00", "VT-R" = "#00BFC4", "SERP" = "#C77CFF", "OXTP" = "#619CFF") # Assign a color to each pathway
+plot_pi <- ggplot(pg_na, aes(x=pathway, y=nucl_div, fill=pathway)) +
+  geom_point(aes(color=pathway), position=position_jitter(width=0.1), size=0.5, alpha=0.6, stroke = 0.9, color = "black") +
+  scale_fill_manual(values = colors_pways, ) +
+  scale_color_manual(values = colors_pways) +
+  geom_violin(alpha = 0.4, color = "transparent")+
+  geom_text(data = subset(pg_na, nucl_div > 0.018), aes(label = gene), vjust = -1, size = 2) + # Label filter points
+  theme_minimal()+
+  labs(x="Pathway", y="index"~pi*"")+
+  ggtitle("Nucleotide diversity ("~pi*")")
+# Display plot
+plot_pi
+# Summary statistics of each pathway
+by(pg_na$nucl_div, pg_na$pathway, summary)
+```
+
+###### Lollipop chart: Top 10 genes of the Oxytocin Signalling Pathway
+
+```{r}
+library("ggplot2")
+library("dplyr")
+df_top10 <- read.csv("datasets/oxtp_FEL_dNdS.txt", header = T, sep = "\t")
+#Rename columns and select the ones required
+colnames(df_top10) <- c("gene", "w", "3", "4", "5", "6", "site_density")
+df_top10_f <-df_top10[1:10,]
+df_top10_f <- select(df_top10_f, c(gene, w, site_density))
+df_top10_f$site_density <- round(df_top10_f$site_density, round(2)) # Round to 2 decimals
+
+#Order by w value
+df_s <- df_top10_f[order(df_top10_f$w, decreasing = T), ]
+gene_order = c(df_s$gene)
+df_top10_f$gene <- factor(df_top10_f$gene, levels = rev(gene_order))
+
+#Plot
+dNdS_top10 <- ggplot(df_top10_f, aes(x = gene, y = w)) +
+  geom_segment(aes(x = gene, xend = gene, y = 0.2, yend = w), linetype=2, color = "black", linewidth = 0.6) +
+  geom_point(aes(size = site_density), fill = "gray", color = "black", shape = 21, alpha = 1, stroke = 1) +
+  geom_text(aes(label = paste(site_density, " %", sep = "")), size = 3, color = "black", hjust = -0.5) +
+  scale_size(range = c(1, 10)) +
+  labs(title = "Top 10 OXTP genes dNdS ratio. ",
+       x = "Gene",
+       y = "dN/dS",
+       size = "Positive sites\ndensity\n(% of sites)") +
+  ylim(0.2, 0.7) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10)) + 
+  coord_flip()
+
+dNdS_top10
+# Summary
+summary(df_top10_f)
+```
+
+###### Scatterplot for discrete variables: Pair-bonding vs SNP (ref/alternative)
+
+```{r}
+library("ggplot2")
+library("dplyr")
+
+df <- read.csv("datasets/EGFR_19907494_PB_BT.txt", sep = "\t")
+df2 <- read.csv("datasets/spp-tribe.txt", sep = "\t")
+
+colnames(df) <- c("spp", "PB", "SNP")
+colnames(df2)
+
+df_final <- inner_join(df, df2, by="spp")
+
+SNP_vs_PB <- ggplot(df_final, aes(x = PB, y = SNP, color = tribe)) +
+  geom_point(position=position_jitter(width=0.2, height = 0.2)) +
+  scale_x_continuous(breaks = c(0, 1), limits = c(-0.2, 1.2)) +
+  scale_y_continuous(breaks = c(0, 1), limits = c(-0.2, 1.2))
+
+SNP_vs_PB
+```
+
+
+
