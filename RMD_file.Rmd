@@ -3,7 +3,6 @@ title: "Rmarkdown exercise"
 author: "Pol"
 date: "2023-05-08"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -18,9 +17,45 @@ knitr::opts_chunk$set(echo = TRUE)
 [Rmarkdown, the definitive guide](https://bookdown.org/yihui/rmarkdown/)
 
 
-# Rmarkdown exercise
+# Statistical Analysis of (Behavioural) Data
 
-#### Packages for Rmarkdown
+## Index:
+
+1. Getting ready
+    + Packages for Rmarkdown
+    + Create, list and extract directories and files
+    + Import data and visualize data structure  
+&nbsp;
+
+2. Rmarkdown tips
+
+3. Create Version Control (Git)
+    + Download
+    + Configure
+      + Git in the PC
+      + Git in RStudio
+    + Setting up a project in RStudio
+    + Using Git  
+&nbsp;
+
+4. Exploring data and summary statistics
+    + Violin plot
+    + Lollipop chart
+    + Scatterplot on two discrete variables  
+&nbsp;
+
+5. Inferential Statistics (part I)
+    + Corelation between nucleotide diversity (π) and dNdS ratio (ω)  
+&nbsp;
+
+6. Inferential Statistics (part II)
+
+---
+
+
+## 1. Getting ready
+
+### Packages for Rmarkdown
 
 ```{r, eval=FALSE}
 install.packages("rmarkdown")
@@ -28,7 +63,7 @@ install.packages("tinytex")
 tinytex::install_tinytex() # Tinytex is requred for PDF format
 library(rmarkdown)
 ```
-#### Create, list and extract directories and files
+### Create, list and extract directories and files
 
 ```{r, eval=FALSE}
 dir.create("output") # Create directory
@@ -38,7 +73,7 @@ list.files() # List files on current directory
 list.dirs() # List directories on current directory
 ```
 
-#### Import data and visualize data structure
+### Import data and visualize data structure
 
 I am familiar with these sort of commands and I use them often on my current PhD project. For this reason I do not go into detail.
 
@@ -57,53 +92,54 @@ str(pathways)
 summary(pathways)
 ```
 
-#### Rmarkdown language
+## 2. Rmarkdown tips
 
 * ``< Ctr + Alt + I >`` opens a chunk of code
 * ``echo = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be shown.
 * ``eval = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be run at knitting.
 * Introducing images: ``![title](path){width=???px, height=???px}``
+* ``&nbsp;`` is a special HTML code for a non-breaking space, which can be used in Rmarkdown documents to add empty space between text. 
 
-# Create Version Control
+## 3. Create Version Control
 To create a Version Control on Git, a GitHub account is required.
 
-##### Download
+### Download
 Git needs to be installed in the computer. To check if it is installed, the following can be typed in the R terminal: ``git --version``. [Here](https://git-scm.com/downloads) is the link for downloading it.
 
-##### Configure
-###### Git in the PC
+### Configure
+#### Git in the PC
 In the terminal of the computer, this needs to be typed:
 ```
 git config --global user.email 'you@youremail.com'
 git config --global user.name 'Your Name'
 git config --global --list # Confirm configuration
 ```
-###### Git in RStudio
+#### Git in RStudio
 For RStudio to access Git: ``Tools > Global Options > Git/SVN > Git executable > <path_to_git>``
 
 ![Git in RStudio](Figures/Git_in_RStudio.png){width=400px, height=400px}
 
-###### Setting up a project in RStudio
+### Setting up a project in RStudio
 1. Create a new repository in GitHub with a README file
 2. Create a new project with Version Control in RStudio
-  * Include the URL of the GitHub repository
+    + Include the URL of the GitHub repository
   
-##### Using Git
-Four steps on saving the changes:
+### Using Git
+Four steps on saving the changes (+ extract files):
 
-**Save** in local computer (normally)
+  + **Save** in local computer (normally)
 
-**Stage** the file in Git (brak point in the progress)
+  + **Stage** the file in Git (brak point in the progress)
 
-**Commit** creates a permanent snapshot of changes
+  + **Commit** creates a permanent snapshot of changes
 
-**Push** to upload on GitHub
+  + **Push** to upload on GitHub
 
-**Pull** to import from GitHub to local computer
+  + **Pull** to import from GitHub to local computer
 
 
 
-# Exploring data and summary statistics
+## 4. Exploring data and summary statistics
 
 #### **Violin plot: Nucleotide Diversity of all genes**
 
@@ -155,7 +191,7 @@ df_top10_f$gene <- factor(df_top10_f$gene, levels = rev(gene_order))
 
 #Plot
 dNdS_top10 <- ggplot(df_top10_f, aes(x = gene, y = dNdS)) +
-  geom_segment(aes(x = gene, xend = gene, y = 0.2, yend = dNdS), linetype=2, color = "black", linewidth = 0.6) +
+  geom_segment(aes(x = gene, xend = gene, y = 0.3, yend = dNdS), linetype=2, color = "black", linewidth = 0.6) +
   geom_point(aes(size = site_density), fill = "gray", color = "black", shape = 21, alpha = 1, stroke = 1) +
   geom_text(aes(label = paste(site_density, " %", sep = "")), size = 3, color = "black", hjust = -0.5) +
   scale_size(range = c(1, 10)) +
@@ -203,11 +239,13 @@ SNP_vs_PB <- ggplot(df_final, aes(x = PB, y = SNP, color = tribe)) +
 SNP_vs_PB
 ```
 
-# Inferential Statistics
+## 5. Inferential Statistics (part I)
 
-#### Corelation between nucleotide diversity (π) and dNdS ratio (ω)
-We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is corelated with the index of positive selection (ω). By taking the Oxytocin Signalling Pathway, we compute a Spearman's corelation test, which does NOT assume linearity but only monotony (always same sense -positive or negative-).
+### Corelation between nucleotide diversity (π) and dNdS ratio (ω)
 
+EXPLAIN PROCESS WITH TEST FINDER
+
+We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is corelated with the index of positive selection (ω). In the case of the Oxytocin Signalling Pathway, this is how the data looks.
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
@@ -218,6 +256,36 @@ df_oxtp <- dataset[dataset$pathway == "OXTP",]
 # Plot
 ggplot(df_oxtp, aes(x=nucl_div, y=dNdS_FEL)) +
   geom_point()
+```
+To decide what is the apropriate test, we use the [Test Finder](Test_Finder_AQB5th.pdf) in the book Asking Questions in Biology.  
+
+<style>
+.custom-table {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+th:first-of-type {
+    text-align: left;
+}
+</style>
+
+<div class="custom-table">
+
+| Question                             | Answer    |
+| ------------------------------------ | --------- |
+| Looking for a difference or a trend? | **Trend** |
+| X-values set experimentally?         | **NO**    |
+| Type of test:                        | **CORRELATION** |
+| Parametric or non-parametric?        | We don't know, so **NON-PARAMETRIC** |
+| Test to use:                         | **Spearman rank correlation** |
+|                                      |           |
+
+</div>
+
+We compute a Spearman's corelation test, which does NOT assume linearity but only monotony (always same sense -positive or negative-). We do the test for all the five studied pathways
+
+```{r, message=FALSE, warning=FALSE}
 # Corelation
 oxtp_cor <- cor.test(df_oxtp$nucl_div, df_oxtp$dNdS_FEL, method = 'spearman')
 print(oxtp_cor)
@@ -238,9 +306,10 @@ print(serp_cor)
 print(step_cor)
 print(vtr_cor)
 ```
-All tests provide statistical significance for corelation between (π) and (ω) except for the VT-R. The latter has only 7 points and the inferred rho is negative, as opposed to the rest. This can be due to the low number of observations.
+All pathways provide statistical significance for corelation between (π) and (ω) except for the VT-R. The latter has only 7 points and the inferred rho is negative, as opposed to the rest. This can be due to the low number of observations. However, we can conclude that there seems to be a corelation between nucleotide diversity and dNdS ratio.
 
 
-
-shapiro.test(resid(<model>)) will tell if residuals follow normal distribution. If p > 0.05, residuals follow normal distribution
+## 6. Inf statistics (part II)
+step() function
+citation() -> function for most up-to-date citations
 
