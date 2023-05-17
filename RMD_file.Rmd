@@ -310,6 +310,92 @@ All pathways provide statistical significance for corelation between (Ï€) and (Ï
 
 
 ## 6. Inf statistics (part II)
-step() function
-citation() -> function for most up-to-date citations
 
+We will use the variable **weight** as response to the predictors **height**, **leafarea**, **shootarea**, **flowers**
+```{r}
+flowers <- read.csv("data/flower.txt", header = T, sep = "\t")
+names(flowers)
+fl_lm <- glm(data = flowers, formula = weight ~ height + leafarea + shootarea + flowers)
+summary(fl_lm)
+```
+
+``step()`` function. Check if any predictor variable could be deleted to decrease the AIC
+```{r}
+AIC(fl_lm)
+step(fl_lm)
+```
+No variable should be deleted.
+
+#### Data reduction: PCA
+``prcomp()`` function
+```{r}
+# Select only continuous variables 
+flow_red <- flowers[,c("height", "weight", "leafarea", "shootarea")]
+fr_m <- prcomp(flow_red, scale = T) # scale = T uses the column standard deviations to center the data. Highly recommendable for data that have substantially different SD
+summary(fr_m)
+fr_m_c <- prcomp(flow_red, scale = T, center = T) # Center = T uses the column means to center the data. Not necessary in this case but it is recommended in cases where the data is not centered
+summary(fr_m_c)
+```
+Different features from the PCA can be accessed from the model (``fr_m``) to better understand it:
+```{r}
+# What portion of each variable corresponds to each PCA? (rotation)
+print(fr_m)
+# The value of each observation in the original dataset projected to the principal components
+print(fr_m$x)
+```
+
+Plotting PCA: **biplot** and **screeplot**
+The ``biplot`` displays the two PCAs that explain more variability in 2D.
+The ``scree plot`` shows the variance explained as the number of principal components increases.
+```{r}
+# Biplot
+biplot(fr_m)
+
+# Scree plot
+pr.var <- fr_m$sdev^2 # Variability of each PC
+pve <- pr.var / sum(pr.var) # Variance explained by each principal component
+plot(cumsum(pve), xlab = "Principal Component", ylim = c(0, 1), type = "b") # Cumulative proportion of variance explained
+```
+
+PC1 and PC2 explain almost 80% of the variance.
+
+
+#### Multivariate modelling: Generalized Linear Model (glm)
+In this case we will work with the previous dataset (flow_red) including the factor *nitrogen*, which includes three levels: low, medium and high
+```{r}
+flow_mul <- flowers[,c("nitrogen", "height", "weight", "leafarea", "shootarea")]
+flow_mul$nitrogen <- as.factor(flow_mul$nitrogen) # Turn strings into factors
+levels(flow_mul$nitrogen)
+```
+
+##### Plot against weight
+First we can explore the individual relationship of each variable with the weight. For this, we create a code that can be used for any variable, just by changing the name of the ``var_to_plot``. We can also create a linear model that includes the single variable and call ``summary()`` to explore their statistical corelation.
+```{r}
+var_to_plot <- "nitrogen"
+plot(flow_mul[,var_to_plot], flow_mul$weight, xlab = var_to_plot, ylab = "weight")
+
+# Create a model
+formula_simple_model <- paste("weight ~", var_to_plot)
+model <- glm(data = flow_mul, formula = as.formula(formula_simple_model))
+summary(model)
+```
+In the case of **nitrogen**, given that the variable has three levels, the code produces a p-value for each level. In this case, they are all highly significant.
+
+##### Multivariate analysis
+In line with analysing **weight** as a response variable of several predictors, now We create a model that can include all the variables:
+```{r}
+model_mul <- glm(data = flow_mul, formula = weight ~ nitrogen + height + leafarea + shootarea)
+summary(model_mul)
+```
+
+The summary function provides statistical evidence of a big effect of **nitrogen** (all the p-values are extremely small compared to the rest). The bigger the nitrogen content is, the higher the weight becomes. Therefore, there is a positive correlation. By looking at the other variables, **leaf area** has no effect on weight (considering a p-value of 0.05). **Height** and **shoot area** are significant, although far from the **nitrogen** effect.
+
+
+###### Combined effect of predictors (interaction between two variables)
+Considering a model where nitrogen is not included, we can still find **leaf area** and **shoot area** to be statistically significant. In addition, we can test for the effect of the interaction between two variables. In this case, it can be that both variables independently have a small effect but combined they have much more impact (or the other way around). To do this, we have to include the interaction between these two variables as another variable. In the following model, we test if (although not biologically meaningful) the combination between **height** and **shoot area** (*height:shootarea*) has an effect that cannot be spotted by looking at each variable individually:
+```{r}
+model_test <- glm(data = flow_mul, formula = weight ~ height + leafarea + shootarea + height:shootarea)
+summary(model_test)
+```
+
+After removing **nitrogen** from the model, we see a sudden increase of the effect of the **shoot area** and **height**. This is very likely because of the correlation between **nitrogen** and these two variables. In the last model, **shoot area** and **height** are explaining the effect that was previously attributed to **nitrogen**. The interaction **height:shootarea** is not significant (p-value = 0.05) and therefore we can conclude that these two predictors have no other effect than the ones they have individually.
