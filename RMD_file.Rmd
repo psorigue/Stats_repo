@@ -45,10 +45,16 @@ knitr::opts_chunk$set(echo = TRUE)
 &nbsp;
 
 5. Inferential Statistics (part I)
-    + Corelation between nucleotide diversity (π) and dNdS ratio (ω)  
+    + Correlation between nucleotide diversity (π) and dNdS ratio (ω)  
 &nbsp;
 
 6. Inferential Statistics (part II)
+    + Model simplification
+    + Data reduction: PCA
+    + Multivariate modelling: Generalized Linear Model (glm)
+        + Explore data: plot variables
+        + Multivariate analysis
+        + Combined effect of predictors (interaction between two variables)
 
 ---
 
@@ -60,7 +66,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, eval=FALSE}
 install.packages("rmarkdown")
 install.packages("tinytex")
-tinytex::install_tinytex() # Tinytex is requred for PDF format
+tinytex::install_tinytex() # Tinytex is requred to knit on PDF format
 library(rmarkdown)
 ```
 ### Create, list and extract directories and files
@@ -243,9 +249,7 @@ SNP_vs_PB
 
 ### Corelation between nucleotide diversity (π) and dNdS ratio (ω)
 
-EXPLAIN PROCESS WITH TEST FINDER
-
-We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is corelated with the index of positive selection (ω). In the case of the Oxytocin Signalling Pathway, this is how the data looks.
+We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is correlated with the index of positive selection (ω). In the case of the Oxytocin Signalling Pathway, this is how the data looks.
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
@@ -257,7 +261,8 @@ df_oxtp <- dataset[dataset$pathway == "OXTP",]
 ggplot(df_oxtp, aes(x=nucl_div, y=dNdS_FEL)) +
   geom_point()
 ```
-To decide what is the apropriate test, we use the [Test Finder](Test_Finder_AQB5th.pdf) in the book Asking Questions in Biology.  
+
+To decide what is the apropriate test, we use the [Test Finder](Test_Finder_AQB5th.pdf) in the book Asking Questions in Biology:  
 
 <style>
 .custom-table {
@@ -286,11 +291,11 @@ th:first-of-type {
 We compute a Spearman's corelation test, which does NOT assume linearity but only monotony (always same sense -positive or negative-). We do the test for all the five studied pathways
 
 ```{r, message=FALSE, warning=FALSE}
-# Corelation
+# Correlation
 oxtp_cor <- cor.test(df_oxtp$nucl_div, df_oxtp$dNdS_FEL, method = 'spearman')
 print(oxtp_cor)
 
-# Corelation test for the other pathways (all individually)
+# Correlation test for the other pathways (all individually)
 df_dopp <- dataset[dataset$pathway == "DOPP",]
 df_serp <- dataset[dataset$pathway == "SERP",]
 df_step <- dataset[dataset$pathway == "STEP",]
@@ -306,12 +311,14 @@ print(serp_cor)
 print(step_cor)
 print(vtr_cor)
 ```
-All pathways provide statistical significance for corelation between (π) and (ω) except for the VT-R. The latter has only 7 points and the inferred rho is negative, as opposed to the rest. This can be due to the low number of observations. However, we can conclude that there seems to be a corelation between nucleotide diversity and dNdS ratio.
+All pathways provide statistical significance for correlation between (π) and (ω) except for the VT-R. The latter has only 7 points and the inferred rho is negative, as opposed to the rest. This can be due to the low number of observations. However, we can conclude that there seems to be a correlation between nucleotide diversity and dNdS ratio.
 
 
 ## 6. Inf statistics (part II)
 
-We will use the variable **weight** as response to the predictors **height**, **leafarea**, **shootarea**, **flowers**
+### Model simplification
+
+By using the flowers dataset ([Intro2R book](intro2r.com)) we take the variable **weight** as response to the predictors **height**, **leafarea**, **shootarea**, **flowers**
 ```{r}
 flowers <- read.csv("data/flower.txt", header = T, sep = "\t")
 names(flowers)
@@ -319,15 +326,16 @@ fl_lm <- glm(data = flowers, formula = weight ~ height + leafarea + shootarea + 
 summary(fl_lm)
 ```
 
-``step()`` function. Check if any predictor variable could be deleted to decrease the AIC
+``step()`` function is used to check if any predictor variable could be deleted to decrease the AIC
 ```{r}
 AIC(fl_lm)
 step(fl_lm)
 ```
-No variable should be deleted.
+No variable should be deleted because the full model is the one that has lowest AIC.
+All the predictors have a positive effect, although differently distributed
 
-#### Data reduction: PCA
-``prcomp()`` function
+### Data reduction: PCA
+``prcomp()`` function.
 ```{r}
 # Select only continuous variables 
 flow_red <- flowers[,c("height", "weight", "leafarea", "shootarea")]
@@ -341,47 +349,51 @@ Different features from the PCA can be accessed from the model (``fr_m``) to bet
 # What portion of each variable corresponds to each PCA? (rotation)
 print(fr_m)
 # The value of each observation in the original dataset projected to the principal components
-print(fr_m$x)
+head(fr_m$x, n = 10) # The entire dataset has 96 observations but here we only print 10 lines
 ```
 
-Plotting PCA: **biplot** and **screeplot**
-The ``biplot`` displays the two PCAs that explain more variability in 2D.
-The ``scree plot`` shows the variance explained as the number of principal components increases.
+Plotting PCA: **biplot** and **screeplot**:
+    + ``biplot`` displays the two PCAs that explain more variability in two dimensions.
+    + ``scree plot`` shows the variance explained as the number of principal components increases.
 ```{r}
 # Biplot
 biplot(fr_m)
+```
 
+In the biplot we observe that **weight**, **leaf area** and **shoot area** occupy a much larger range of PC1 (x-axis), and negatively correlated. **Height**, on the other hand, covers a much smaller range of PC1 and, in contrast, is much more relevant in PC2 (y-axis). This can be numerically confirmed in the previous output of ``print(fr_m)``. In addition, we conclude that **shoot area** and **leaf area** are highly correlated in the data given their similar display in the biplot.
+
+```{r}
 # Scree plot
 pr.var <- fr_m$sdev^2 # Variability of each PC
 pve <- pr.var / sum(pr.var) # Variance explained by each principal component
-plot(cumsum(pve), xlab = "Principal Component", ylim = c(0, 1), type = "b") # Cumulative proportion of variance explained
+plot(cumsum(pve), xlab = "Pr. Component", ylim = c(0, 1), type = "b") # Cumulative proportion of variance explained
 ```
 
-PC1 and PC2 explain almost 80% of the variance.
+PC1 and PC2 explain almost 80% of the total variance, whereas PC4 only adds about 5% of it.
 
 
-#### Multivariate modelling: Generalized Linear Model (glm)
-In this case we will work with the previous dataset (flow_red) including the factor *nitrogen*, which includes three levels: low, medium and high
+### Multivariate modelling: Generalized Linear Model (glm)
+In this case we will work with the previous dataset (flow_red) including the variable **nitrogen**, which includes three levels: *low*, *medium* and *high*
 ```{r}
 flow_mul <- flowers[,c("nitrogen", "height", "weight", "leafarea", "shootarea")]
 flow_mul$nitrogen <- as.factor(flow_mul$nitrogen) # Turn strings into factors
 levels(flow_mul$nitrogen)
 ```
 
-##### Plot against weight
-First we can explore the individual relationship of each variable with the weight. For this, we create a code that can be used for any variable, just by changing the name of the ``var_to_plot``. We can also create a linear model that includes the single variable and call ``summary()`` to explore their statistical corelation.
+#### Explore data: plot variables
+First we can explore the individual relationship of each variable with the weight. For this, we create a code that can be used for any variable, just by changing the name of the ``var_to_plot``. We can also create a linear model that includes the single variable and call ``summary()`` to explore their statistical correlation.
 ```{r}
 var_to_plot <- "nitrogen"
 plot(flow_mul[,var_to_plot], flow_mul$weight, xlab = var_to_plot, ylab = "weight")
 
-# Create a model
+# Create a univariate model
 formula_simple_model <- paste("weight ~", var_to_plot)
 model <- glm(data = flow_mul, formula = as.formula(formula_simple_model))
 summary(model)
 ```
-In the case of **nitrogen**, given that the variable has three levels, the code produces a p-value for each level. In this case, they are all highly significant.
+When we model the efect of **nitrogen** on weight, given that the variable has three levels, the code produces a p-value for each level. In this case, they are all highly significant.
 
-##### Multivariate analysis
+#### Multivariate analysis
 In line with analysing **weight** as a response variable of several predictors, now We create a model that can include all the variables:
 ```{r}
 model_mul <- glm(data = flow_mul, formula = weight ~ nitrogen + height + leafarea + shootarea)
@@ -391,11 +403,11 @@ summary(model_mul)
 The summary function provides statistical evidence of a big effect of **nitrogen** (all the p-values are extremely small compared to the rest). The bigger the nitrogen content is, the higher the weight becomes. Therefore, there is a positive correlation. By looking at the other variables, **leaf area** has no effect on weight (considering a p-value of 0.05). **Height** and **shoot area** are significant, although far from the **nitrogen** effect.
 
 
-###### Combined effect of predictors (interaction between two variables)
+#### Combined effect of predictors (interaction between two variables)
 Considering a model where nitrogen is not included, we can still find **leaf area** and **shoot area** to be statistically significant. In addition, we can test for the effect of the interaction between two variables. In this case, it can be that both variables independently have a small effect but combined they have much more impact (or the other way around). To do this, we have to include the interaction between these two variables as another variable. In the following model, we test if (although not biologically meaningful) the combination between **height** and **shoot area** (*height:shootarea*) has an effect that cannot be spotted by looking at each variable individually:
 ```{r}
 model_test <- glm(data = flow_mul, formula = weight ~ height + leafarea + shootarea + height:shootarea)
 summary(model_test)
 ```
 
-After removing **nitrogen** from the model, we see a sudden increase of the effect of the **shoot area** and **height**. This is very likely because of the correlation between **nitrogen** and these two variables. In the last model, **shoot area** and **height** are explaining the effect that was previously attributed to **nitrogen**. The interaction **height:shootarea** is not significant (p-value = 0.05) and therefore we can conclude that these two predictors have no other effect than the ones they have individually.
+After removing **nitrogen** from the model, we see a sudden increase of the effect of the **shoot area** and **height**. This is very likely because of the correlation between **nitrogen** and these two variables. In the last model, **shoot area** and **height** are explaining the effect that was previously attributed to **nitrogen**. The interaction **height:shootarea** is not significant (at a p-value of 0.05) and therefore we can conclude that these two predictors have no other effect than the ones they have individually.
