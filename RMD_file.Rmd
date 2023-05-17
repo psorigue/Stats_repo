@@ -12,56 +12,57 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Available books links
-[Intro2R](intro2r.com)
+[Intro2R](https://intro2r.com/)
 
 [Rmarkdown, the definitive guide](https://bookdown.org/yihui/rmarkdown/)
 
 
-# Statistical Analysis of (Behavioural) Data
+# Statistical Analysis of (Behavioural) Data in Rmarkdown
 
-## Index:
+## Index: {#go-to-index}
 
-1. Getting ready
-    + Packages for Rmarkdown
-    + Create, list and extract directories and files
-    + Import data and visualize data structure  
+1. [Getting ready](#getting-ready)
+    + [Packages for Rmarkdown](#packages-for-rmarkdown)
+    + [Create, list and extract directories and files](#create-list-and-extract-directories-and-files)
+    + [Import data and visualize data structure](#import-data-and-visualize-data-structure)  
 &nbsp;
 
-2. Rmarkdown tips
+2. [Rmarkdown tips](#rmarkdown-tips)
 
-3. Create Version Control (Git)
-    + Download
-    + Configure
-      + Git in the PC
-      + Git in RStudio
-    + Setting up a project in RStudio
-    + Using Git  
+3. [Create Version Control (Git)](#create-version-control)
+    + [Download](#download)
+    + [Configure](#configure)
+      + [Git in the PC](#git-in-the-pc)
+      + [Git in RStudio](#git-in-rstudio)
+    + [Setting up a project in RStudio](#setting-up-a-project-in-rstudio)
+    + [Using Git](#using-git)  
 &nbsp;
 
-4. Exploring data and summary statistics
-    + Violin plot
-    + Lollipop chart
-    + Scatterplot on two discrete variables  
+4. [Exploring data and summary statistics](#exploring-data-and-summary-statistics)
+    + [Violin plot](#violin-plot-nucleotide-diversity-of-all-genes)
+    + [Lollipop chart](#lollipop-chart-top-10-genes-of-the-oxytocin-signalling-pathway)
+    + [Scatterplot on two discrete variables](#scatterplot-for-discrete-variables)  
 &nbsp;
 
-5. Inferential Statistics (part I)
-    + Correlation between nucleotide diversity (π) and dNdS ratio (ω)  
+5. [Inferential Statistics (part I)](#inferential-statistics-i)
+    + [Correlation between nucleotide diversity (π) and dNdS ratio (ω)](#corelation-between-nucleotide-diversity)  
 &nbsp;
 
-6. Inferential Statistics (part II)
-    + Model simplification
-    + Data reduction: PCA
-    + Multivariate modelling: Generalized Linear Model (glm)
-        + Explore data: plot variables
-        + Multivariate analysis
-        + Combined effect of predictors (interaction between two variables)
+6. [Inferential Statistics (part II)](#inferential-statistics-ii)
+    + [Model simplification](##model-simplification)
+    + [Data reduction: PCA](#data-reduction)
+    + [Multivariate modelling: Generalized Linear Model (glm)](#multivariate-modelling)
+        + [Explore data: plot variables](#explore-data)
+        + [Multivariate analysis](#multivariate-analysis)
+        + [Combined effect of predictors (interaction between two variables)](#combined-effect-predictors)
 
 ---
 
 
-## 1. Getting ready
+## 1. Getting ready {#getting-ready}
+[back to index](#go-to-index)
 
-### Packages for Rmarkdown
+### Packages for Rmarkdown {#packages-for-rmarkdown}
 
 ```{r, eval=FALSE}
 install.packages("rmarkdown")
@@ -69,7 +70,7 @@ install.packages("tinytex")
 tinytex::install_tinytex() # Tinytex is requred to knit on PDF format
 library(rmarkdown)
 ```
-### Create, list and extract directories and files
+### Create, list and extract directories and files {#create-list-and-extract-directories-and-files}
 
 ```{r, eval=FALSE}
 dir.create("output") # Create directory
@@ -79,7 +80,7 @@ list.files() # List files on current directory
 list.dirs() # List directories on current directory
 ```
 
-### Import data and visualize data structure
+### Import data and visualize data structure {#import-data-and-visualize-data-structure}
 
 I am familiar with these sort of commands and I use them often on my current PhD project. For this reason I do not go into detail.
 
@@ -98,7 +99,8 @@ str(pathways)
 summary(pathways)
 ```
 
-## 2. Rmarkdown tips
+## 2. Rmarkdown tips {#rmarkdown-tips}
+[back to index](#go-to-index)
 
 * ``< Ctr + Alt + I >`` opens a chunk of code
 * ``echo = FALSE`` can be added next to the ``{r}`` at the chunks of code that do not need to be shown.
@@ -106,31 +108,33 @@ summary(pathways)
 * Introducing images: ``![title](path){width=???px, height=???px}``
 * ``&nbsp;`` is a special HTML code for a non-breaking space, which can be used in Rmarkdown documents to add empty space between text. 
 
-## 3. Create Version Control
+## 3. Create Version Control {#create-version-control}
+[back to index](#go-to-index)
+
 To create a Version Control on Git, a GitHub account is required.
 
-### Download
+### Download {#download}
 Git needs to be installed in the computer. To check if it is installed, the following can be typed in the R terminal: ``git --version``. [Here](https://git-scm.com/downloads) is the link for downloading it.
 
-### Configure
-#### Git in the PC
+### Configure {#configure}
+#### Git in the PC {#git-in-the-pc}
 In the terminal of the computer, this needs to be typed:
 ```
 git config --global user.email 'you@youremail.com'
 git config --global user.name 'Your Name'
 git config --global --list # Confirm configuration
 ```
-#### Git in RStudio
+#### Git in RStudio {#git-in-rstudio}
 For RStudio to access Git: ``Tools > Global Options > Git/SVN > Git executable > <path_to_git>``
 
 ![Git in RStudio](Figures/Git_in_RStudio.png){width=400px, height=400px}
 
-### Setting up a project in RStudio
+### Setting up a project in RStudio {#setting-up-a-project-in-rstudio}
 1. Create a new repository in GitHub with a README file
 2. Create a new project with Version Control in RStudio
     + Include the URL of the GitHub repository
   
-### Using Git
+### Using Git {#using-git}
 Four steps on saving the changes (+ extract files):
 
   + **Save** in local computer (normally)
@@ -145,9 +149,10 @@ Four steps on saving the changes (+ extract files):
 
 
 
-## 4. Exploring data and summary statistics
+## 4. Exploring data and summary statistics {#exploring-data-and-summary-statistics}
+[back to index](#go-to-index)
 
-#### **Violin plot: Nucleotide Diversity of all genes**
+#### **Violin plot: Nucleotide Diversity of all genes** {#violin-plot-nucleotide-diversity-of-all-genes}
 
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
@@ -178,7 +183,7 @@ plot_pi
 by(pg_na$nucl_div, pg_na$pathway, summary)
 ```
 
-#### **Lollipop chart: Top 10 genes of the Oxytocin Signalling Pathway**
+#### **Lollipop chart: Top 10 genes of the Oxytocin Signalling Pathway** {#lollipop-chart-top-10-genes-of-the-oxytocin-signalling-pathway}
 
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
@@ -219,7 +224,7 @@ dNdS_top10
 summary(df_top10_f)
 ```
 
-#### **Scatterplot for discrete variables: Pair-bonding vs SNP (ref/alternative)**
+#### **Scatterplot for discrete variables: Pair-bonding vs SNP (ref/alternative)** {#scatterplot-for-discrete-variables}
 
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
@@ -245,9 +250,10 @@ SNP_vs_PB <- ggplot(df_final, aes(x = PB, y = SNP, color = tribe)) +
 SNP_vs_PB
 ```
 
-## 5. Inferential Statistics (part I)
+## 5. Inferential Statistics (part I) {#inferential-statistics-i}
+[back to index](#go-to-index)
 
-### Corelation between nucleotide diversity (π) and dNdS ratio (ω)
+### Corelation between nucleotide diversity (π) and dNdS ratio (ω) {#corelation-between-nucleotide-diversity}
 
 We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is correlated with the index of positive selection (ω). In the case of the Oxytocin Signalling Pathway, this is how the data looks.
 ```{r, message=FALSE, warning=FALSE}
@@ -314,11 +320,12 @@ print(vtr_cor)
 All pathways provide statistical significance for correlation between (π) and (ω) except for the VT-R. The latter has only 7 points and the inferred rho is negative, as opposed to the rest. This can be due to the low number of observations. However, we can conclude that there seems to be a correlation between nucleotide diversity and dNdS ratio.
 
 
-## 6. Inf statistics (part II)
+## 6. Inf statistics (part II) {#inferential-statistics-ii}
+[back to index](#go-to-index)
 
-### Model simplification
+### Model simplification {#model-simplification}
 
-By using the flowers dataset ([Intro2R book](intro2r.com)) we take the variable **weight** as response to the predictors **height**, **leafarea**, **shootarea**, **flowers**
+By using the flowers dataset ([Intro2R book](https://intro2r.com/)) we take the variable **weight** as response to the predictors **height**, **leafarea**, **shootarea**, **flowers**
 ```{r}
 flowers <- read.csv("data/flower.txt", header = T, sep = "\t")
 names(flowers)
@@ -334,7 +341,7 @@ step(fl_lm)
 No variable should be deleted because the full model is the one that has lowest AIC.
 All the predictors have a positive effect, although differently distributed
 
-### Data reduction: PCA
+### Data reduction: PCA {#data-reduction}
 ``prcomp()`` function.
 ```{r}
 # Select only continuous variables 
@@ -344,7 +351,7 @@ summary(fr_m)
 fr_m_c <- prcomp(flow_red, scale = T, center = T) # Center = T uses the column means to center the data. Not necessary in this case but it is recommended in cases where the data is not centered
 summary(fr_m_c)
 ```
-Different features from the PCA can be accessed from the model (``fr_m``) to better understand it:
+<a id="out-frm"></a>Different features from the PCA can be accessed from the model (``fr_m``) to better understand it:
 ```{r}
 # What portion of each variable corresponds to each PCA? (rotation)
 print(fr_m)
@@ -360,7 +367,7 @@ Plotting PCA: **biplot** and **screeplot**:
 biplot(fr_m)
 ```
 
-In the biplot we observe that **weight**, **leaf area** and **shoot area** occupy a much larger range of PC1 (x-axis), and negatively correlated. **Height**, on the other hand, covers a much smaller range of PC1 and, in contrast, is much more relevant in PC2 (y-axis). This can be numerically confirmed in the previous output of ``print(fr_m)``. In addition, we conclude that **shoot area** and **leaf area** are highly correlated in the data given their similar display in the biplot.
+In the biplot we observe that **weight**, **leaf area** and **shoot area** occupy a much larger range of PC1 (x-axis), and negatively correlated. **Height**, on the other hand, covers a much smaller range of PC1 and, in contrast, is much more relevant in PC2 (y-axis). This can be numerically confirmed in the [previous output](#out-frm) of ``print(fr_m)``. In addition, we conclude that **shoot area** and **leaf area** are highly correlated in the data given their similar display in the biplot.
 
 ```{r}
 # Scree plot
@@ -372,7 +379,7 @@ plot(cumsum(pve), xlab = "Pr. Component", ylim = c(0, 1), type = "b") # Cumulati
 PC1 and PC2 explain almost 80% of the total variance, whereas PC4 only adds about 5% of it.
 
 
-### Multivariate modelling: Generalized Linear Model (glm)
+### Multivariate modelling: Generalized Linear Model (glm) {#multivariate-modelling}
 In this case we will work with the previous dataset (flow_red) including the variable **nitrogen**, which includes three levels: *low*, *medium* and *high*
 ```{r}
 flow_mul <- flowers[,c("nitrogen", "height", "weight", "leafarea", "shootarea")]
@@ -380,7 +387,7 @@ flow_mul$nitrogen <- as.factor(flow_mul$nitrogen) # Turn strings into factors
 levels(flow_mul$nitrogen)
 ```
 
-#### Explore data: plot variables
+#### Explore data: plot variables {#explore-data}
 First we can explore the individual relationship of each variable with the weight. For this, we create a code that can be used for any variable, just by changing the name of the ``var_to_plot``. We can also create a linear model that includes the single variable and call ``summary()`` to explore their statistical correlation.
 ```{r}
 var_to_plot <- "nitrogen"
@@ -393,7 +400,7 @@ summary(model)
 ```
 When we model the efect of **nitrogen** on weight, given that the variable has three levels, the code produces a p-value for each level. In this case, they are all highly significant.
 
-#### Multivariate analysis
+#### Multivariate analysis {#multivariate-analysis}
 In line with analysing **weight** as a response variable of several predictors, now We create a model that can include all the variables:
 ```{r}
 model_mul <- glm(data = flow_mul, formula = weight ~ nitrogen + height + leafarea + shootarea)
@@ -403,10 +410,10 @@ summary(model_mul)
 The summary function provides statistical evidence of a big effect of **nitrogen** (all the p-values are extremely small compared to the rest). The bigger the nitrogen content is, the higher the weight becomes. Therefore, there is a positive correlation. By looking at the other variables, **leaf area** has no effect on weight (considering a p-value of 0.05). **Height** and **shoot area** are significant, although far from the **nitrogen** effect.
 
 
-#### Combined effect of predictors (interaction between two variables)
-Considering a model where nitrogen is not included, we can still find **leaf area** and **shoot area** to be statistically significant. In addition, we can test for the effect of the interaction between two variables. In this case, it can be that both variables independently have a small effect but combined they have much more impact (or the other way around). To do this, we have to include the interaction between these two variables as another variable. In the following model, we test if (although not biologically meaningful) the combination between **height** and **shoot area** (*height:shootarea*) has an effect that cannot be spotted by looking at each variable individually:
+#### Combined effect of predictors (interaction between two variables) {#combined-effect-predictors}
+Considering a model where nitrogen is not included, we can still find **leaf area** and **shoot area** to be statistically significant. In addition, we can test for the effect of the interaction between two variables. In this case, it can be that both variables independently have a small effect but combined they have much more impact (or the other way around). To do this, we have to include the interaction between these two variables as another variable. In the following model, we test if (although not biologically meaningful) the combination between **height** and **shoot area** (*height\*shootarea*) has an effect that cannot be spotted by looking at each variable individually:
 ```{r}
-model_test <- glm(data = flow_mul, formula = weight ~ height + leafarea + shootarea + height:shootarea)
+model_test <- glm(data = flow_mul, formula = weight ~ height + leafarea + shootarea + height*shootarea)
 summary(model_test)
 ```
 
