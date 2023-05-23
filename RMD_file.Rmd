@@ -54,7 +54,10 @@ knitr::opts_chunk$set(echo = TRUE)
     + [Multivariate modelling: Generalized Linear Model (glm)](#multivariate-modelling)
         + [Explore data: plot variables](#explore-data)
         + [Multivariate analysis](#multivariate-analysis)
-        + [Combined effect of predictors (interaction between two variables)](#combined-effect-predictors)
+        + [Combined effect of predictors (interaction between two variables)](#combined-effect-predictors)  
+&nbsp;
+
+7. [Conclusions](#conclusions)
 
 ---
 
@@ -255,7 +258,7 @@ SNP_vs_PB
 
 ### Corelation between nucleotide diversity (π) and dNdS ratio (ω) {#corelation-between-nucleotide-diversity}
 
-We are asking if the nucleotide diversity (index that indicates the level of variability of a nucleotide sequences across a set of species) is correlated with the index of positive selection (ω). In the case of the Oxytocin Signalling Pathway, this is how the data looks.
+We are asking if the nucleotide diversity (index that indicates the level of variability of a set of nucleotide sequences across multiple species) is correlated with the index of positive selection (ω). In the case of the Oxytocin Signalling Pathway, this is how the data looks:
 ```{r, message=FALSE, warning=FALSE}
 library("ggplot2", verbose = F)
 library("dplyr", verbose = F)
@@ -268,6 +271,7 @@ ggplot(df_oxtp, aes(x=nucl_div, y=dNdS_FEL)) +
   geom_point()
 ```
 
+If the two variables are correlated, we would expect some sort of linear regression.
 To decide what is the apropriate test, we use the [Test Finder](Test_Finder_AQB5th.pdf) in the book Asking Questions in Biology:  
 
 <style>
@@ -339,7 +343,7 @@ AIC(fl_lm)
 step(fl_lm)
 ```
 No variable should be deleted because the full model is the one that has lowest AIC.
-All the predictors have a positive effect, although differently distributed
+All the predictors have a positive effect, although differently distributed.
 
 ### Data reduction: PCA {#data-reduction}
 ``prcomp()`` function.
@@ -360,8 +364,10 @@ head(fr_m$x, n = 10) # The entire dataset has 96 observations but here we only p
 ```
 
 Plotting PCA: **biplot** and **screeplot**:
-    + ``biplot`` displays the two PCAs that explain more variability in two dimensions.
-    + ``scree plot`` shows the variance explained as the number of principal components increases.
+
+  + **biplot** displays the two PCAs that explain more variability in two dimensions.
+  + **scree plot** shows the variance explained as the number of principal components increases.
+
 ```{r}
 # Biplot
 biplot(fr_m)
@@ -376,7 +382,7 @@ pve <- pr.var / sum(pr.var) # Variance explained by each principal component
 plot(cumsum(pve), xlab = "Pr. Component", ylim = c(0, 1), type = "b") # Cumulative proportion of variance explained
 ```
 
-PC1 and PC2 explain almost 80% of the total variance, whereas PC4 only adds about 5% of it.
+PC1 and PC2 explain almost 80% of the total variance, whereas PC4 only adds about 5%.
 
 
 ### Multivariate modelling: Generalized Linear Model (glm) {#multivariate-modelling}
@@ -401,7 +407,7 @@ summary(model)
 When we model the efect of **nitrogen** on weight, given that the variable has three levels, the code produces a p-value for each level. In this case, they are all highly significant.
 
 #### Multivariate analysis {#multivariate-analysis}
-In line with analysing **weight** as a response variable of several predictors, now We create a model that can include all the variables:
+In line with analysing **weight** as a response variable of several predictors, now we create a model that can include all the variables:
 ```{r}
 model_mul <- glm(data = flow_mul, formula = weight ~ nitrogen + height + leafarea + shootarea)
 summary(model_mul)
@@ -418,3 +424,8 @@ summary(model_test)
 ```
 
 After removing **nitrogen** from the model, we see a sudden increase of the effect of the **shoot area** and **height**. This is very likely because of the correlation between **nitrogen** and these two variables. In the last model, **shoot area** and **height** are explaining the effect that was previously attributed to **nitrogen**. The interaction **height:shootarea** is not significant (at a p-value of 0.05) and therefore we can conclude that these two predictors have no other effect than the ones they have individually.
+
+## 7. Conclusions {#conclusions}
+[back to index](#go-to-index)
+
+This course was very helpful to refresh some statistical concepts that were a bit forgotten deep in my brain. In addition, it showed me several functions that can be of help for my near future. However, what I would like to highlight the most is the use of Rmarkdown and Version Control. The combination of all these tools has made it a course as enjoyable as helpful. Thanks again, Peter!
