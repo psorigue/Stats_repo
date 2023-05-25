@@ -1,0 +1,163 @@
+---
+title: "Rmarkdown exercise"
+author: "Laurinha"
+date: "2023-05-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Packages
+```{r, messages=FALSE}
+library(rmarkdown)
+library(ggplot2)
+library(dplyr)
+```
+
+## Read dataset
+```{r}
+flowers <- read.csv("data/flower.txt", header = T, sep = "\t")
+str(flowers)
+```
+
+## Inferential Statistics I
+
+### ONE-WAY ANOVA: Does the level of nitrogen (*predictor*) affect the weight (*response*)? And the number of flowers? And the height?: 
+Following the TestFinder in AQB5th:
+1. Looking for a difference
+2. One level of grouping
+3. Data is replicated
+4. Data are independent in each treatment (level of nitrogen)
+
+**One-way Anova**
+
+##### Weight
+```{r}
+# Plot Data
+plot_weight <- ggplot(flowers, aes(x=nitrogen, y=weight)) +
+  geom_violin()
+plot_weight
+# Anova
+mod_weight <- aov(data = flowers, formula = weight ~ nitrogen)
+summary(mod_weight)
+```
+##### Flowers
+```{r}
+# Plot data
+plot_flowers <- ggplot(flowers, aes(x=nitrogen, y=flowers)) +
+  geom_boxplot()
+plot_flowers
+
+# Anova
+mod_flowers <- aov(data = flowers, formula = flowers ~ nitrogen)
+summary(mod_flowers)
+```
+
+##### Height
+```{r}
+# Plot data
+plot_height <- ggplot(flowers, aes(x=nitrogen, y=height)) +
+  geom_boxplot()
+plot_height
+
+# Anova
+mod_height <- aov(data = flowers, formula = height ~ nitrogen)
+summary(mod_height)
+```
+
+There is a strong statistical evidence for the level of nitrogen to affect the weight and the number of flowers. The height is not significant considering a p-value of 0.05.
+
+
+#### Corelation between leaf area and shoot area
+We are asking if there is a correlation between the area of the leaves and the area of the shoots
+
+Following the TestFinder in AQB5th:
+1. Looking for a trend
+2. The X-values were not fixed experimentally
+3. When looking at a correlation between these two variables, we are not sure if it's parametric. Therefore, we perform a Spearman Rank correlation analysis.
+
+**Spearman Rank correlation**
+
+```{r}
+# Visual inspection: plot variables
+plot_leaf_shoot <- ggplot(flowers, aes(x=shootarea, y=leafarea)) +
+  geom_point()
+plot_leaf_shoot
+```
+
+The visual inspection does not reveal any strong correlation. Intuitively, we could expect an increase of the leaf area with an increase of the shoot area. However, if there is any trend, visually we can only sense a very slight increase that might not be enough for statistical evidence.
+
+```{r}
+# Spearman Rank correlation
+leafshoot_cor <- cor.test(flowers$leafarea, flowers$shootarea, method = 'spearman')
+print(leafshoot_cor)
+```
+
+Spearman's correlation assesses monotonic relationship between two variables. ``rho`` ranges between -1 and 1. A value close to 1 or -1 provides evidence of a very strong correlation, either positively correlated (1) or negatively correlated (-1). Values close to 0 tell that the two variables are not correlated.
+In the result of the test in R, the **p-value** provides statistical evidence of a correlation, whereas the **rho** coefficient assesses the strength of this correlation. The output of the test shows a strong evidence (*p-value*) of a relatively high correlation (*rho*). Biological samples often have a big variation that leads to small correlation values. For this reason, a value of 0.446 can be considered a solid association between the two variables.
+
+
+#### Normality of the residuals
+
+Many statistical tests assume that the residuals are normally distributed. When this assumption is violated, the statistical test looses reliability and should not be used. In the following, we assess the normality of the residuals in the model ``weight ~ height``. The normality of the residuals can be visually assessed with a **histogram** and a **qqplot**. A Shapiro-Wilk test can test the normality statistically.
+
+```{r}
+# Linear model: weight ~ height
+model <- glm(formula = weight ~ height, data = flowers)
+
+# Histogram of the residuals
+hist(resid(model), breaks = 10)
+
+# QQplot
+qqnorm(resid(model)) ; qqline(resid(model), col = "red")
+
+# Shapiro-Wilk test
+shapiro.test(resid(model))
+```
+
+When we explore visually the distribution of the residuals we observe that they are not following normality, both in the histogram and the qqplot. However, the biological variation never follows a perfect distribution, so we test for normality with a Shapiro-Wilk test. The output p-value provides statistical evidence for **no normality** of the residuals. This can be due to the intrinsic correlation of the two variables.
+
+## Inferential Statistics II
+
+### PCA: Data reduction
+
+Principal Component Analysis does not make any test. This technique takes a model with several initial biological variables and reduces the data into new variables that are uncorrelated to each other and contain fewer dimensions than the initial dataset. Each PC contains a portion of the variability of each of the initial variables. A **biplot** can be used to visualize the two PC that explain most of the variability of the data.
+
+```{r}
+# Select variables in the data set. Only numeric variables
+flowers_PCA_dat <- flowers[,c("height", "weight", "leafarea", "shootarea", "flowers")]
+flowers_PCA <- prcomp(flowers_PCA_dat, scale = T)
+
+# Composition of PCs
+flowers_PCA
+
+# Variation of each PC
+summary(flowers_PCA)
+
+# Biplot
+biplot(flowers_PCA)
+```
+
+The PCA produced five Principal Components. The first principal component explains half of the variation on the dataset. As seen in the composition of the first PC1, this PC is negatively correlated to all the variables, and evenly distributed among them; approximately 50% of the variation of each variable is explained in this PC except for the height. The second PC explains 22% of the variation and is mainly explained by height. The first four Principal Components explain together 95% of the variation in the data.
+
+The biplot shows the distribution of the two first PCs, which account for 73.4% of the total variance. The red arrows represent the distribution of the variables in the PCs. As explained above, height shows to be much more correlated with PC2, whereas the rest of the variables have a bigger impact on PC1. In addition, flowers and weight appear to be more correlated between each other (similar direction and length), and the same occurs between leaf area and shoot area.  
+
+### Multiple Regression
+
+Now we are interested in understanding what variables contribute to the production of flowers. For this purpose, we take **flowers** as the response variable and we model it on a linear model with all the other variables as predictors.
+```{r}
+glm_flowers <- glm(data = flowers, formula = flowers ~ nitrogen + weight + leafarea + shootarea + height)
+
+# Normality of the residuals
+hist(resid(glm_flowers), breaks = 10)
+shapiro.test(resid(glm_flowers))
+
+# Statistical test
+summary(glm_flowers)
+```
+
+The residuals of the model are normally distributed.
+Many variables seems to be associated with the number of flowers. The strongest statistical evidence is *height* (p-value: 2.66e-05), followed by treatment and weight. The level of nitrogen has a small effect on flowers, yet statistically significant. Leaf area appears to be the only variable unrelated to number of flowers. 

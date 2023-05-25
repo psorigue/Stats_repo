@@ -413,11 +413,12 @@ model_mul <- glm(data = flow_mul, formula = weight ~ nitrogen + height + leafare
 summary(model_mul)
 ```
 
-The summary function provides statistical evidence of a big effect of **nitrogen** (all the p-values are extremely small compared to the rest). The bigger the nitrogen content is, the higher the weight becomes. Therefore, there is a positive correlation. By looking at the other variables, **leaf area** has no effect on weight (considering a p-value of 0.05). **Height** and **shoot area** are significant, although far from the **nitrogen** effect.
+The ``summary()`` function provides statistical evidence of a big effect of **nitrogen** (all the p-values are extremely small compared to the rest). The bigger the nitrogen content is, the higher the weight becomes. Therefore, there is a positive correlation. By looking at the other variables, **leaf area** has no effect on weight (considering a p-value of 0.05). **Height** and **shoot area** are significant, although far from the **nitrogen** effect.
 
 
 #### Combined effect of predictors (interaction between two variables) {#combined-effect-predictors}
 Considering a model where nitrogen is not included, we can still find **leaf area** and **shoot area** to be statistically significant. In addition, we can test for the effect of the interaction between two variables. In this case, it can be that both variables independently have a small effect but combined they have much more impact (or the other way around). To do this, we have to include the interaction between these two variables as another variable. In the following model, we test if (although not biologically meaningful) the combination between **height** and **shoot area** (*height\*shootarea*) has an effect that cannot be spotted by looking at each variable individually:
+
 ```{r}
 model_test <- glm(data = flow_mul, formula = weight ~ height + leafarea + shootarea + height*shootarea)
 summary(model_test)
